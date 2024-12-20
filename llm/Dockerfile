@@ -3,6 +3,10 @@
 # Use a Python image with uv pre-installed
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
+# install ollama
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
 # Install the project into `/app`
 WORKDIR /app
 

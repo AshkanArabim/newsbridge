@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import io
+import re
 from langcodes import Language
 
 import parse_rss
@@ -112,7 +113,8 @@ async def get_all_sources_summary_audios(email: str, lang: str):
     first_phrase = True
 
     async for phrase in get_all_sources_summary_phrases(email, lang):
-        if not phrase:
+        # don't generate audio if no word characters are found
+        if not re.search(r"\w", phrase):
             continue
 
         # Get binary audio data for the current phrase

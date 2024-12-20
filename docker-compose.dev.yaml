@@ -32,8 +32,12 @@ services:
       - ./tts/tts-server.py:/app/tts-server.py
 
   llm:
+    environment:
+      - IS_DEV=true
     ports:
       - ${LLM_PORT}:${LLM_PORT}
+    volumes:
+      - ./llm/src/:/app/src/
 
 volumes:
   client_dev_node_modules:

@@ -30,7 +30,6 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - MODEL_NAME=${MODEL_NAME}
       - SERVER_PORT=${SERVER_PORT}
     restart: unless-stopped
 
@@ -63,6 +62,7 @@ services:
       - llm_vol:/root/.ollama
     environment:
       - MODEL_NAME=${MODEL_NAME}
+      - LLM_PORT=${LLM_PORT}
     deploy:
       resources:
         reservations:

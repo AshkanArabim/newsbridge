@@ -1,5 +1,6 @@
 import os
 import asyncio
+import aiohttp
 from ollama import AsyncClient
 from langcodes import Language
 
@@ -19,22 +20,33 @@ Here's the story:
 
 
 LLM_SERVER = os.environ.get("LLM_SERVER")
-if not LLM_SERVER:
-    raise Exception("LLM_SERVER env var not set!")
+assert LLM_SERVER, "LLM_SERVER env var not set!"
 
 
 client = AsyncClient(host=LLM_SERVER)
 
 
 async def summarize_news(content: str, lang="en"):
-    prompt = "\n".join([
-        # converts language code to display name before replacing
-        INSTRUCTIONS.replace("<<LANGUAGE>>", Language.get(lang).display_name()),
-        '"""',
-        content,
-        '"""',
-    ])
-    
-    generator = await client.generate(model="llama3.2", prompt=prompt, stream=True)
-    async for chunk in generator:
-        yield chunk
+    prompt = "\n".join(
+        [
+            # converts language code to display name before replacing
+            INSTRUCTIONS.replace("<<LANGUAGE>>", Language.get(lang).display_name()),
+            '"""',
+            content,
+            '"""',
+        ]
+    )
+
+    # call llm service
+    # example call:
+    # curl localhost:11000/api/generate?prompt=tell+me+a+story+that+is+peak+fiction.
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            f"http://{LLM_SERVER}/api/generate?prompt={prompt}"
+        ) as response:
+            if response.status != 200:
+                raise Exception(f"LLM server returned {response.status} on {prompt}")
+
+            async for phrase in response.content:
+                phrase = phrase.decode() # decode utf-8 sequence to string
+                yield phrase

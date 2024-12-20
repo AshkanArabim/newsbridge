@@ -15,8 +15,6 @@ import llm
 import tts
 
 app = FastAPI()
-# logger = logging.getLogger('uvicorn.error')
-# logger.setLevel(logging.DEBUG)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,7 +37,7 @@ if len(os.environ.get("JWT_SECRET_KEY", "")) == 0:
 
 RESPONSE_MESSAGES = {
     "invalid_auth": "Invalid authentication token!",
-    "valid_auth": "Token is valid. Welcome back!",  # this is mostly for debugging
+    "valid_auth": "Token is valid. Welcome back!",
 }
 
 class User(BaseModel):
@@ -80,7 +78,7 @@ def get_user_sources(email: str):
     results = cursor.fetchall()
     return [source for _, source in results]
 
-async def get_all_sources_summary_chunks(email: str, lang: str):
+async def get_all_sources_summary_phrases(email: str, lang: str):
     sources = get_user_sources(email)
     items_per_src = MAX_STORIES // len(sources)
     
@@ -99,39 +97,26 @@ async def get_all_sources_summary_chunks(email: str, lang: str):
         for story in source_stories:
             news_stories.append("".join(["(from ", source_link, ")", story]))
     
-    # print("type of news_stories", type(news_stories)) # DEBUG
-    # print("len of news_stories", len(news_stories)) # DEBUG
     for story in news_stories:
-        # print("WOOOOOOOOOOOOOHOOOOOOOOOOOOOOOOOOOO HERE'S LEN OF ONE STORY:", len(story), flush=True) # DEBUG
         async for chunk in llm.summarize_news(story, lang):
             yield chunk
 
-async def get_all_sources_summary_sentences(email: str, lang: str):
-    sentence_word_list = []
-    async for chunk in get_all_sources_summary_chunks(email, lang):
-        word = chunk["response"] # sample: {'model': 'llama3.2', 'created_at': '2024-10-31T13:27:25.388384885Z', 'response': ':', 'done': False}
-        sentence_word_list.append(word)
-        
-        if word in [".", "?", "!"]:
-            sentence = "".join(sentence_word_list)
-            sentence_word_list = []
-            yield sentence
-    if sentence_word_list:
-        yield "".join(sentence_word_list)
-
 async def get_all_sources_summary_audios(email: str, lang: str):
-    first_sentence = True
+    first_phrase = True
     
-    async for sentence in get_all_sources_summary_sentences(email, lang):
-        if not sentence:
+    async for phrase in get_all_sources_summary_phrases(email, lang):
+        if not phrase:
             continue
+            
+        # ensure it's a string
+        phrase = str(phrase)
 
-        # Get binary audio data for the current sentence
-        audio = await tts.text_to_audio(sentence, lang)
+        # Get binary audio data for the current phrase
+        audio = await tts.text_to_audio(phrase, lang)
         audio_io = io.BytesIO(audio)
         
-        # If it's the first sentence, yield the full WAV (header + data)
-        if first_sentence:
+        # If it's the first phrase, yield the full WAV (header + data)
+        if first_phrase:
             # overwrite length bytes in wav header
             # see https://stackoverflow.com/questions/2551943/how-to-stream-a-wav-file
             audio_io.seek(4)
@@ -142,9 +127,9 @@ async def get_all_sources_summary_audios(email: str, lang: str):
             audio_io.seek(io.SEEK_SET)
             
             yield audio_io.read()  # Yield full WAV with header
-            first_sentence = False
+            first_phrase = False
         else:
-            # For subsequent sentences, skip the 44-byte header
+            # For subsequent phrases, skip the 44-byte header
             audio_io.seek(44)
             yield audio_io.read()  # Yield only audio data frames
 

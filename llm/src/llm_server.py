@@ -43,8 +43,8 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/api/generate")
 def generate(prompt: str):
     def generate_stream():
-        for chunk in model.generate(prompt):
-            yield chunk
+        for phrase in model.generate(prompt):
+            yield phrase
 
     return StreamingResponse(generate_stream())
 

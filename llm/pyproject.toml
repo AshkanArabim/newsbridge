@@ -1,0 +1,12 @@
+[project]
+name = "llm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.6",
+    "google-generativeai>=0.8.3",
+    "ollama>=0.4.4",
+    "uvicorn>=0.34.0",
+]

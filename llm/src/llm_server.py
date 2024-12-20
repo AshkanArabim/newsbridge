@@ -44,6 +44,7 @@ app = FastAPI(lifespan=lifespan)
 def generate(prompt: str):
     def generate_stream():
         for phrase in model.generate(prompt):
+            phrase = phrase.encode()
             yield phrase
 
     return StreamingResponse(generate_stream())

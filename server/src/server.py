@@ -104,8 +104,8 @@ async def get_all_sources_summary_phrases(email: str, lang: str):
             news_stories.append("".join(["(from ", source_link, ")", story]))
 
     for story in news_stories:
-        async for chunk in llm.summarize_news(story, lang):
-            yield chunk
+        async for phrase in llm.summarize_news(story, lang):
+            yield phrase
 
 
 async def get_all_sources_summary_audios(email: str, lang: str):
@@ -114,9 +114,6 @@ async def get_all_sources_summary_audios(email: str, lang: str):
     async for phrase in get_all_sources_summary_phrases(email, lang):
         if not phrase:
             continue
-
-        # ensure it's a string
-        phrase = str(phrase)
 
         # Get binary audio data for the current phrase
         audio = await tts.text_to_audio(phrase, lang)

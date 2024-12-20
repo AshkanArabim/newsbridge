@@ -47,5 +47,6 @@ async def summarize_news(content: str, lang="en"):
             if response.status != 200:
                 raise Exception(f"LLM server returned {response.status} on {prompt}")
 
-            async for chunk in response.content:
-                yield chunk
+            async for phrase in response.content:
+                phrase = phrase.decode() # decode utf-8 sequence to string
+                yield phrase

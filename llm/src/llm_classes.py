@@ -7,11 +7,19 @@ import re
 
 
 class AbstractModel(ABC):
+    def __init__(self):
+        # match all punctuation followed by whitespace
+        # src: https://www.freecodecamp.org/news/what-is-punct-in-regex-how-to-match-all-punctuation-marks-in-regular-expressions/
+        # I can't hardcode punctuation characters since the output won't
+        # just be in English.
+        # TODO: find a way to at least ignore commas and quotes in languages
+        self.delimiter = r"[^\w\s]+"
+
     @abstractmethod
     def generate(self, prompt: str):
         """
-        Generates a streaming response for the given prompt. 
-        
+        Generates a streaming response for the given prompt.
+
         Yields one phrase at a time. A phrase is a sequence of words ending with
         a punctuation mark.
         """
@@ -20,8 +28,10 @@ class AbstractModel(ABC):
 
 class Llama(AbstractModel):
     def __init__(self, llama_name: str):
+        super().__init__()
+
         # src: https://stackoverflow.com/a/78501628/14751074
-        # translated ^^'s bash script logic to python
+        # translated the answer's bash script logic to python
 
         # start the ollama server in the background
         print("Waiting for Ollama server to start")
@@ -39,23 +49,19 @@ class Llama(AbstractModel):
 
     def generate(self, prompt: str):
         stream = ollama.generate(model=self.model_name, prompt=prompt, stream=True)
-        
+
         # llama outputs mostly in words, so I'm piecing them together and
         # returning when a phrase is complete.
         phrase_word_list = []
         for chunk_obj in stream:
             chunk = chunk_obj["response"]
             phrase_word_list.append(chunk)
-            
-            # match all punctuation followed by whitespace
-            # src: https://www.freecodecamp.org/news/what-is-punct-in-regex-how-to-match-all-punctuation-marks-in-regular-expressions/
-            # I can't hardcode punctuation characters since the output won't
-            # just be in English.
-            if re.match(r"[^\w\s]+[\s]*$", chunk):
+
+            if re.search(self.delimiter, chunk):
                 phrase = "".join(phrase_word_list)
                 phrase_word_list = []
                 yield phrase
-        
+
         # if no more responses, return whatever's left
         if phrase_word_list:
             yield "".join(phrase_word_list)
@@ -63,6 +69,8 @@ class Llama(AbstractModel):
 
 class Gemini2(AbstractModel):
     def __init__(self, model_name: str, api_key: str):
+        super().__init__()
+
         # src: copied code from Google's AI studio
         genai.configure(api_key=api_key)
 
@@ -83,5 +91,29 @@ class Gemini2(AbstractModel):
     def generate(self, prompt: str):
         # src: https://github.com/google-gemini/generative-ai-python/blob/main/docs/api/google/generativeai/GenerativeModel.md#generate_content
         stream = self.model.generate_content(prompt, stream=True)
-        for chunk in stream:
-            yield chunk.text
+
+        # gemini's phrase size is between one sentence and one paragraph.
+        # I'll have to split the content into words and iterate over them
+        phrase_word_list = []
+        for chunk_obj in stream:
+            chunk = chunk_obj.text
+
+            # split phrase into words (including the whitespace) & append to list
+            space_delimiter = r"\s"
+            whitespaces = re.findall(space_delimiter, chunk)
+            words = re.split(space_delimiter, chunk)
+            for i in range(len(whitespaces)):
+                words[i] += whitespaces[i]
+
+            # iterate over the words, yield when a phrase is completed
+            for word in words:
+
+                phrase_word_list.append(word)
+                if re.search(self.delimiter, word):
+                    phrase = "".join(phrase_word_list)
+                    phrase_word_list = []
+                    yield phrase
+
+        # if no more responses, return whatever's left
+        if phrase_word_list:
+            yield "".join(phrase_word_list)

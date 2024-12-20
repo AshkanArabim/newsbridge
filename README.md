@@ -8,15 +8,7 @@ sources as RSS feeds, and then delivers the top stories rom all sources
 briefing.
 
 Mix sources from French, Hindi, Italian, etc., it doesn't matter.
-Everything is translated to your language before audio is played.
-
-**Note:** Source languages are limited by the chosen LLM (Llama 3.2 by default)
-and target languages (in which you'll hear the audio) are languages supported
-by both the LLM and the TSS (XTTS v2 in this case).
-See below for details. 
-
-You COULD go beyond the officially supported languages,
-but you may get a garbage output.
+Everything is translated to your language before the audio is played.
 
 **Try it yourself:** http://news.ashkan.zone
 
@@ -32,20 +24,24 @@ Nothing is stopping you from using a bogus email address for the account, if
 that makes you more comfortable.
 
 ## Supported languages
-Input languages / languages of your sources (([source](https://ollama.com/library/llama3.2))):
 
-Note that even though Llama 3.3 doesn't expand this list, it performs much 
-better on the "unsupported" languages, such as Persian.
-- English
-- German
-- French
-- Italian
-- Portuguese
-- Hindi
-- Spanish
-- Thai
+### Source languages (languages in which news articles are written)
+Your choice of LLM is the main bottleneck for your source languages. Smarter LLMs have less of a risk of outputting garbage, and support more languages.
 
-Output languages / language of the output audio (union of [Llama 3.2 languages](https://ollama.com/library/llama3.2) and [XTTS v2 languages](https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#languages)):
+- Self-hosted Llama 3.2 (default):
+  - English
+  - German
+  - French
+  - Italian
+  - Portuguese
+  - Hindi
+  - Spanish
+  - Thai
+- Gemini 2.0 (requires an API key), Llama 3.1 (self-hosted), or Llama 3.3 (self-hosted):
+  - So far, ANY language!! Open an issue if you find that some niche input language causes issues.
+
+### Output languages (language of the output audio):
+This is essentially the intersection of [Llama 3.2 languages](https://ollama.com/library/llama3.2) and [XTTS v2 languages](https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#languages):
 - English
 - German
 - French
@@ -57,6 +53,14 @@ Output languages / language of the output audio (union of [Llama 3.2 languages](
 ## Roadmap
 - [x] public hosting
 - [ ] support for popular LLM and TTS APIs (e.g. if someone wants to use GPT-4o and ElevenLabs)
+  - [ ] LLMs
+    - [ ] Gemini
+      - [x] 2.0
+      - [ ] 1.xx
+    - [ ] OpenAI
+    - [ ] Anthropic
+  - [ ] TTS services
+    - [ ] ElevenLabs
 - [ ] streams - 
   - [x] play immediately as the news is summarized
   - [ ] print the text as the summary is generated (in case audio is unclear)
@@ -69,7 +73,7 @@ Output languages / language of the output audio (union of [Llama 3.2 languages](
   - [ ] electron app
   - [x] docker container (for easy self-hosting)
   - [ ] android app
-- [ ] optional ads (for funding, if demand is high)
+- [ ] optional ads (to fund hosting, if demand is high)
 
 ## Usage (the UI)
 Refer to the demo video above.

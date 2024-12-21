@@ -75,7 +75,7 @@ function SignUp({ translations }) {
 				<h2>{translations ? translations.signUpButton : "Sign Up"}</h2>
 
 				<div className="form-group">
-					<label htmlFor="languages">Language:</label>
+					<label htmlFor="languages">Output Language:</label>
 					<select
 						name="languages"
 						id="languages"
@@ -85,13 +85,23 @@ function SignUp({ translations }) {
 							handleChange(e);
 						}}
 					>
+						<option>Arabic</option>
+						<option>Chinese (Simplified)</option>
+						<option>Czech</option>
+						<option>Dutch</option>
 						<option>English</option>
 						<option>French</option>
 						<option>German</option>
 						<option>Hindi</option>
+						<option>Hungarian</option>
 						<option>Italian</option>
+						<option>Japanese</option>
+						<option>Korean</option>
+						<option>Polish</option>
 						<option>Portuguese</option>
+						<option>Russian</option>
 						<option>Spanish</option>
+						<option>Turkish</option>
 					</select>
 				</div>
 

@@ -41,14 +41,28 @@ Your choice of LLM is the main bottleneck for your source languages. Smarter LLM
   - So far, ANY language!! Open an issue if you find that some niche input language causes issues.
 
 ### Output languages (language of the output audio):
-This is essentially the intersection of [Llama 3.2 languages](https://ollama.com/library/llama3.2) and [XTTS v2 languages](https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#languages):
+Again, **be sure your LLM supports your output language**. If not, you risk 
+getting garbage output. For example, if you're using LLama3.2 as your LLM, you
+can't expect any useful output in Turkish. Gemini, however, supports Turkish.
+
+These are the same as [XTTS v2's supported languages](https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#languages):
+- Arabic
+- Chinese (simplified)
+- Czech
+- Dutch
 - English
-- German
 - French
-- Italian
-- Portuguese
+- German
 - Hindi
+- Hungarian
+- Italian
+- Japanese
+- Korean
+- Polish
+- Portuguese
+- Russian
 - Spanish
+- Turkish
 
 ## Roadmap
 - [x] public hosting

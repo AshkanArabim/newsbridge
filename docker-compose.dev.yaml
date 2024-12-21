@@ -21,7 +21,7 @@ services:
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
-      - ./server:/usr/src/app
+      - ./server/src:/app/src
 
   tts:
     environment:

@@ -1,0 +1,17 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp>=3.11.11",
+    "beautifulsoup4>=4.12.3",
+    "fastapi>=0.115.6",
+    "feedparser>=6.0.11",
+    "langcodes>=3.5.0",
+    "ollama>=0.4.4",
+    "pg8000>=1.31.2",
+    "pyjwt>=2.10.1",
+    "uvicorn>=0.34.0",
+]

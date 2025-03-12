@@ -10,6 +10,8 @@ briefing.
 Mix sources from French, Hindi, Italian, etc., it doesn't matter.
 Everything is translated to your language before the audio is played.
 
+**Try it yourself:** http://news.ashkan.zone
+
 **Video demo:**
 
 [![image](https://github.com/user-attachments/assets/ee8288b9-fd88-4901-ac7b-60b2c1a92ce7)](https://youtu.be/OtwY-ry_MwY)
